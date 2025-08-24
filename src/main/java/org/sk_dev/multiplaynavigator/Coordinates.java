@@ -1,4 +1,4 @@
-package org.sk_dev.waypointnav;
+package org.sk_dev.multiplaynavigator;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;

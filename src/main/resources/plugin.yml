@@ -1,7 +1,13 @@
-name: waypointnav
+name: multiplaynavigator
 version: '0.1-SNAPSHOT'
-main: org.sk_dev.waypointnav.WaypointNav
+main: org.sk_dev.multiplaynavigator.MultiplayNavigator
 api-version: '1.21'
 commands:
   navigate:
     description: start navigation
+  beacon:
+    description: manage beacon for navigation
+    permission: multiplayernavigator.beacon
+permissions:
+  multiplayernavigator.beacon:
+    default: op

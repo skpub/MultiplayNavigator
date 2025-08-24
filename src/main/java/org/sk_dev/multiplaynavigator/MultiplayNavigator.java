@@ -1,4 +1,4 @@
-package org.sk_dev.waypointnav;
+package org.sk_dev.multiplaynavigator;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -6,7 +6,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.*;
 import java.util.logging.Level;
 
-public final class WaypointNav extends JavaPlugin {
+public final class MultiplayNavigator extends JavaPlugin {
     private Coordinates coordinates;
     private static final Map<UUID, NavigationTask> activeNavigations = new LinkedHashMap<>();
 
@@ -16,20 +16,21 @@ public final class WaypointNav extends JavaPlugin {
             try {
                 getDataFolder().mkdirs();
             } catch (Exception e) {
-                getLogger().log(Level.SEVERE, e.toString());
+                getLogger().log(Level.SEVERE, "Couldn't get Plugin data folder.", e);
                 Bukkit.getPluginManager().disablePlugin(this);
             }
         }
         try {
             this.coordinates = Coordinates.getInstance(this);
         } catch (Exception e) {
-            getLogger().log(Level.SEVERE, e.toString());
+            getLogger().log(Level.SEVERE, "Couldn't get Coordinates.", e);
             Bukkit.getPluginManager().disablePlugin(this);
         }
         try {
             this.getCommand("navigate").setExecutor(new NavigateCommand(this));
+            this.getCommand("beacon").setExecutor(new BeaconCommand());
         } catch (Exception e) {
-            getLogger().log(Level.SEVERE, e.toString());
+            getLogger().log(Level.SEVERE, "Couldn't register some command(s).",e);
             Bukkit.getPluginManager().disablePlugin(this);
         }
     }

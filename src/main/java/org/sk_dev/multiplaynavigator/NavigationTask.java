@@ -1,6 +1,5 @@
-package org.sk_dev.waypointnav;
+package org.sk_dev.multiplaynavigator;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
