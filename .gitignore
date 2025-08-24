@@ -1,6 +1,9 @@
 # User-specific stuff
 .idea/
 
+# dbg server
+server/
+
 *.iml
 *.ipr
 *.iws
