@@ -28,6 +28,10 @@ public class Coordinates {
         return INSTANCE;
     }
 
+    public static Coordinates getInstance() throws IOException, NumberFormatException, NullPointerException {
+        return INSTANCE;
+    }
+
     public void put(String name, Coordinate coord) throws IOException{
         this.data.put(name, coord);
         this.write();

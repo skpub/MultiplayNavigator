@@ -2,3 +2,6 @@ name: waypointnav
 version: '0.1-SNAPSHOT'
 main: org.sk_dev.waypointnav.WaypointNav
 api-version: '1.21'
+commands:
+  navigate:
+    description: start navigation

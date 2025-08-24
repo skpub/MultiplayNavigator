@@ -2,12 +2,13 @@ package org.sk_dev.waypointnav;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.util.Vector;
 
+import java.util.*;
 import java.util.logging.Level;
 
 public final class WaypointNav extends JavaPlugin {
     private Coordinates coordinates;
+    private static final Map<UUID, NavigationTask> activeNavigations = new LinkedHashMap<>();
 
     @Override
     public void onEnable() {
@@ -20,10 +21,31 @@ public final class WaypointNav extends JavaPlugin {
             }
         }
         try {
-            coordinates = Coordinates.getInstance(this);
+            this.coordinates = Coordinates.getInstance(this);
         } catch (Exception e) {
             getLogger().log(Level.SEVERE, e.toString());
             Bukkit.getPluginManager().disablePlugin(this);
+        }
+        try {
+            this.getCommand("navigate").setExecutor(new NavigateCommand(this));
+        } catch (Exception e) {
+            getLogger().log(Level.SEVERE, e.toString());
+            Bukkit.getPluginManager().disablePlugin(this);
+        }
+    }
+
+    public void startNavigation(UUID playerID, NavigationTask task) {
+        if (activeNavigations.containsKey(playerID)) {
+            activeNavigations.get(playerID).cancel();
+        }
+        task.runTaskTimer(this, 0L, 1L);
+        activeNavigations.put(playerID, task);
+    }
+
+    public void stopNavigation(UUID playerID) {
+        NavigationTask task = activeNavigations.remove(playerID);
+        if (task != null) {
+            task.cancel();
         }
     }
 
