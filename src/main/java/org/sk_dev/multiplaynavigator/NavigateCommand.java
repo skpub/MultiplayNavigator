@@ -1,6 +1,5 @@
 package org.sk_dev.multiplaynavigator;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -11,14 +10,18 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class NavigateCommand implements CommandExecutor, TabCompleter {
     private final MultiplayNavigator plugin;
     private final Coordinates coordinates;
+    private final Map<UUID, NavigationTask> activeNavigationsRef;
 
-    public NavigateCommand(MultiplayNavigator plugin) throws IOException, NumberFormatException {
+    public NavigateCommand(MultiplayNavigator plugin, Map<UUID, NavigationTask> activeNavigations) throws IOException, NumberFormatException {
         this.coordinates = Coordinates.getInstance();
         this.plugin = plugin;
+        this.activeNavigationsRef = activeNavigations;
     }
 
     @Override
@@ -59,7 +62,7 @@ public class NavigateCommand implements CommandExecutor, TabCompleter {
                 commandSender.sendMessage("You're not a player, huh? If you're a machine, go figure it out yourself!");
                 return false;
             }
-            NavigationTask navigation = new NavigationTask(this.plugin, player.getUniqueId(), waypointCoord.vector());
+            NavigationTask navigation = new NavigationTask(this.plugin, player.getUniqueId(), waypointCoord.vector(), this.activeNavigationsRef);
             this.plugin.startNavigation(player.getUniqueId(), navigation);
             return true;
         }

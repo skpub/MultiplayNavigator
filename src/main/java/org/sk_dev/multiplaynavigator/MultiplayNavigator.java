@@ -4,11 +4,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 public final class MultiplayNavigator extends JavaPlugin {
     private Coordinates coordinates;
-    private static final Map<UUID, NavigationTask> activeNavigations = new LinkedHashMap<>();
+    private static final Map<UUID, NavigationTask> activeNavigations = new ConcurrentHashMap<>();
 
     @Override
     public void onEnable() {
@@ -27,7 +28,7 @@ public final class MultiplayNavigator extends JavaPlugin {
             Bukkit.getPluginManager().disablePlugin(this);
         }
         try {
-            this.getCommand("navigate").setExecutor(new NavigateCommand(this));
+            this.getCommand("navigate").setExecutor(new NavigateCommand(this, activeNavigations));
             this.getCommand("beacon").setExecutor(new BeaconCommand());
         } catch (Exception e) {
             getLogger().log(Level.SEVERE, "Couldn't register some command(s).",e);

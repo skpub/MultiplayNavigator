@@ -7,17 +7,20 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
+import java.util.Map;
 import java.util.UUID;
 
 public class NavigationTask extends BukkitRunnable {
     private final JavaPlugin plugin;
     private final UUID playerID;
     private final Vector destination;
+    private final Map<UUID, NavigationTask> activeNavigationsRef;
 
-    public NavigationTask(JavaPlugin plugin, UUID playerID, Vector destination) {
+    public NavigationTask(JavaPlugin plugin, UUID playerID, Vector destination, Map<UUID, NavigationTask> activeNavigations) {
         this.plugin = plugin;
         this.playerID = playerID;
         this.destination = destination;
+        this.activeNavigationsRef = activeNavigations;
     }
 
     @Override
@@ -33,6 +36,9 @@ public class NavigationTask extends BukkitRunnable {
         }
 
         Vector source = player.getLocation().toVector();
+        if (source.distance(this.destination) < 10) {
+            this.cancel();
+        }
         Vector direction = destination.clone().subtract(source).normalize();
 
         for (int i = 1; i <= 10; i++) {
@@ -45,5 +51,11 @@ public class NavigationTask extends BukkitRunnable {
             );
             player.getWorld().spawnParticle(Particle.BUBBLE, loc, 2);
         }
+    }
+
+    @Override
+    public void cancel() throws IllegalStateException {
+        super.cancel();
+        this.activeNavigationsRef.remove(this.playerID);
     }
 }

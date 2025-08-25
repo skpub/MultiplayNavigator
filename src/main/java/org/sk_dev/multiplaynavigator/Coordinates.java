@@ -4,19 +4,19 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
 import java.io.*;
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Coordinates {
     private static Coordinates INSTANCE;
 
-    private Map<String, Coordinate> data;
+    private final Map<String, Coordinate> data;
     private File dataFile;
-    private JavaPlugin plugin;
+    private final JavaPlugin plugin;
 
     private Coordinates(JavaPlugin plugin) throws IOException, NumberFormatException {
         this.plugin = plugin;
-        this.data = new LinkedHashMap<String, Coordinate>();
+        this.data = new ConcurrentHashMap<>();
         this.initialize();
     }
 
@@ -46,7 +46,7 @@ public class Coordinates {
         this.write();
     }
 
-    private void write() throws IOException {
+    private synchronized void write() throws IOException {
         try (PrintWriter p = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
             new FileOutputStream(this.dataFile)
         )))) {
