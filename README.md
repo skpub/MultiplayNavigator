@@ -1,21 +1,27 @@
 # MultiplayNavigator
 
-Spigot, Paper, Purpurサーバ用の座標管理・ナビゲーションプラグインです。
+マイクラのSpigot, Paper, Purpurサーバ用の座標管理・ナビゲーションプラグインです。
 コマンドリファレンスは以下の通り。
+
+A coordinate management and navigation plugin for Spigot, Paper, and Purpur Minecraft servers.
 
 ## /beacon
 
-座標を管理する
+座標を管理する。
+
+Manage coordinates.
 
 ### /beacon add
 
-座標を追加する
+座標を追加する。
+
+Add a coordinate.
 
 ```
 /beacon add (world|nether|end) name_of_coord x y z
 ```
 
-sample
+Example
 ```
 /beacon add world home 12 63 -30
 /beacon add end nerest_city -1302 63 310
@@ -23,7 +29,9 @@ sample
 
 ### /beacon delete
 
-保存されている座標を削除する
+保存されている座標を削除する。
+
+Delete a saved coordinate.
 
 ```
 /beacon delete name_of_coord
@@ -31,7 +39,9 @@ sample
 
 ### /beacon list
 
-保存されている座標を一覧する
+保存されている座標を一覧する。
+
+List saved coordinates.
 
 ```
 /beacon list
@@ -40,11 +50,15 @@ sample
 
 ## /navigate
 
-ナビゲーションを開始・終了する
+ナビゲーションを開始・終了する。
+
+Start or end navigation.
 
 ### /navigate begin
 
-ナビゲーションを開始する
+ナビゲーションを開始する。
+
+Start navigation.
 
 ```
 /navigate begin name_of_coord
@@ -52,7 +66,9 @@ sample
 
 ### /navigate end
 
-ナビゲーションを終了する
+ナビゲーションを終了する。
+
+End navigation.
 
 ```
 /navigate end
