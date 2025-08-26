@@ -1,5 +1,6 @@
 package org.sk_dev.multiplaynavigator;
 
+import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
@@ -14,21 +15,17 @@ public class Coordinates {
     private File dataFile;
     private final JavaPlugin plugin;
 
-    private Coordinates(JavaPlugin plugin) throws IOException, NumberFormatException {
+    private Coordinates(JavaPlugin plugin) throws IOException, NumberFormatException, IllegalArgumentException {
         this.plugin = plugin;
         this.data = new ConcurrentHashMap<>();
         this.initialize();
     }
 
-    public static Coordinates getInstance(JavaPlugin plugin) throws IOException, NumberFormatException {
+    public static Coordinates getInstance(JavaPlugin plugin) throws IOException, NumberFormatException, IllegalArgumentException {
         if (INSTANCE != null) {
             return INSTANCE;
         }
         INSTANCE = new Coordinates(plugin);
-        return INSTANCE;
-    }
-
-    public static Coordinates getInstance() throws IOException, NumberFormatException, NullPointerException {
         return INSTANCE;
     }
 
@@ -52,12 +49,18 @@ public class Coordinates {
         )))) {
             this.data.forEach((k, v) -> {
                 Vector vec = v.vector();
-                p.printf("%s,%s,%d,%d,%d\n", k, v.world(), vec.getBlockX(), vec.getBlockY(), vec.getBlockZ());
+                String worldStr = switch (v.world()) {
+                    case NORMAL -> "world";
+                    case NETHER -> "nether";
+                    case THE_END -> "the_end";
+                    case CUSTOM -> "custom";
+                };
+                p.printf("%s,%s,%d,%d,%d\n", k, worldStr, vec.getBlockX(), vec.getBlockY(), vec.getBlockZ());
             });
         }
     }
 
-    private void initialize() throws IOException, NumberFormatException {
+    private void initialize() throws IOException, NumberFormatException, IllegalArgumentException {
         this.dataFile = new File(this.plugin.getDataFolder(), "coordinates.csv");
 
         if (!this.dataFile.exists()) {
@@ -76,7 +79,18 @@ public class Coordinates {
                 int y = Integer.parseInt(parts[3]);
                 int z = Integer.parseInt(parts[4]);
 
-                Coordinate coord = new Coordinate(WorldEnum.valueOf(world), new Vector(x,y,z));
+                World.Environment env;
+                switch (world) {
+                    case "world" -> env = World.Environment.NORMAL;
+                    case "nether" -> env = World.Environment.NETHER;
+                    case "the_end" -> env = World.Environment.THE_END;
+                    case "custom" -> env = World.Environment.CUSTOM;
+                    default -> {
+                        throw new IllegalArgumentException("Expected world, nether or the_end.");
+                    }
+                };
+
+                Coordinate coord = new Coordinate(env, new Vector(x,y,z));
                 this.data.put(name, coord);
             }
         }

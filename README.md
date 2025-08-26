@@ -18,13 +18,13 @@ Manage coordinates.
 Add a coordinate.
 
 ```
-/beacon add (world|nether|end) name_of_coord x y z
+/beacon add (world|nether|the_end) name_of_coord x y z
 ```
 
 Example
 ```
 /beacon add world home 12 63 -30
-/beacon add end nerest_city -1302 63 310
+/beacon add the_end nerest_city -1302 63 310
 ```
 
 ### /beacon delete
@@ -45,7 +45,7 @@ List saved coordinates.
 
 ```
 /beacon list
-/beacon list (world|nether|end)
+/beacon list (world|nether|the_end)
 ```
 
 ## /navigate

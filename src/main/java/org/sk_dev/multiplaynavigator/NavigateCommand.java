@@ -1,5 +1,6 @@
 package org.sk_dev.multiplaynavigator;
 
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -19,8 +20,8 @@ public class NavigateCommand implements CommandExecutor, TabCompleter {
     private final Map<UUID, NavigationTask> activeNavigationsRef;
 
     public NavigateCommand(MultiplayNavigator plugin, Map<UUID, NavigationTask> activeNavigations) throws IOException, NumberFormatException {
-        this.coordinates = Coordinates.getInstance();
         this.plugin = plugin;
+        this.coordinates = Coordinates.getInstance(this.plugin);
         this.activeNavigationsRef = activeNavigations;
     }
 
@@ -80,7 +81,14 @@ public class NavigateCommand implements CommandExecutor, TabCompleter {
             return Arrays.asList(new String[] {"begin", "end"});
         }
         if (args[0].equals("begin")) {
-            return coordinates.getAll().keySet().stream().toList();
+            if (commandSender instanceof Player player) {
+                World.Environment env = player.getWorld().getEnvironment();
+                return coordinates.getAll().entrySet().stream().filter(
+                        e -> e.getValue().world().equals(env)
+                ).map(
+                        Map.Entry::getKey
+                ).toList();
+            }
         }
         return null;
     }

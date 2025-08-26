@@ -1,12 +1,14 @@
 package org.sk_dev.multiplaynavigator;
 
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,8 +20,8 @@ import java.util.stream.Collectors;
 public class BeaconCommand implements CommandExecutor, TabCompleter {
     private final Coordinates coordinates;
 
-    public BeaconCommand() throws IOException, NumberFormatException {
-        this.coordinates = Coordinates.getInstance();
+    public BeaconCommand(JavaPlugin plugin) throws IOException, NumberFormatException {
+        this.coordinates = Coordinates.getInstance(plugin);
     }
 
     @Override
@@ -42,17 +44,14 @@ public class BeaconCommand implements CommandExecutor, TabCompleter {
                     commandSender.sendMessage("ex: /beacon add home 0 64 0");
                     return false;
                 }
-                WorldEnum world;
-                switch (args[1]) {
-                    case "world", "World", "WORLD" -> world = WorldEnum.WORLD;
-                    case "nether", "Nether", "NETHER" -> world = WorldEnum.NETHER;
-                    case "end", "End", "END" -> world = WorldEnum.END;
-                    default -> {
-                        commandSender.sendMessage("ex: /beacon add world home 33 64 -38");
-                        commandSender.sendMessage("ex: /beacon add nether fortress -340 50 30");
-                        commandSender.sendMessage("ex: /beacon add end city 1300 60 30");
-                        return false;
-                    }
+                World.Environment env;
+                try {
+                    env = World.Environment.valueOf(args[1]);
+                } catch (IllegalArgumentException e) {
+                    commandSender.sendMessage("ex: /beacon add world home 33 64 -38");
+                    commandSender.sendMessage("ex: /beacon add nether fortress -340 50 30");
+                    commandSender.sendMessage("ex: /beacon add the_end city 1300 60 30");
+                    return false;
                 }
                 String wayPointName = args[2];
                 int x = Integer.parseInt(args[3]);
@@ -60,7 +59,7 @@ public class BeaconCommand implements CommandExecutor, TabCompleter {
                 int z = Integer.parseInt(args[5]);
 
                 try {
-                    coordinates.put(wayPointName, new Coordinate(world, new Vector(x, y, z)));
+                    coordinates.put(wayPointName, new Coordinate(env, new Vector(x, y, z)));
                     commandSender.sendMessage("Added " + wayPointName + ".");
                 } catch (IOException e) {
                     commandSender.sendMessage("Couldn't add the waypoint.");
@@ -98,20 +97,20 @@ public class BeaconCommand implements CommandExecutor, TabCompleter {
                     return true;
                 }
                 if (args.length == 2) {
-                    WorldEnum world;
+                    World.Environment env;
                     switch (args[1]) {
-                        case "world", "World", "WORLD" -> world = WorldEnum.WORLD;
-                        case "nether", "Nether", "NETHER" -> world = WorldEnum.NETHER;
-                        case "end", "End", "END" -> world = WorldEnum.END;
+                        case "world" -> env = World.Environment.NORMAL;
+                        case "nether" -> env = World.Environment.NETHER;
+                        case "the_end" -> env = World.Environment.THE_END;
                         default -> {
                             commandSender.sendMessage("ex: /beacon list world");
                             commandSender.sendMessage("ex: /beacon list nether");
-                            commandSender.sendMessage("ex: /beacon list end");
+                            commandSender.sendMessage("ex: /beacon list the_end");
                             return false;
                         }
                     }
                     String[] list = coordinates.getAll().entrySet().stream()
-                            .filter(e -> e.getValue().world() == world)
+                            .filter(e -> e.getValue().world().equals(env))
                             .map(e -> String.format("%s %s X: %d Y: %d Z: %d",
                                     e.getKey(),
                                     e.getValue().world(),
@@ -127,7 +126,7 @@ public class BeaconCommand implements CommandExecutor, TabCompleter {
         commandSender.sendMessage("ex: /beacon add world home 0 64 0");
         commandSender.sendMessage("ex: /beacon delete fortress");
         commandSender.sendMessage("ex: /beacon list");
-        commandSender.sendMessage("ex: /beacon list end");
+        commandSender.sendMessage("ex: /beacon list the_end");
         return false;
     }
 
@@ -154,9 +153,9 @@ public class BeaconCommand implements CommandExecutor, TabCompleter {
         if (args[0].equals("add")) {
             if (args.length == 2) {
                 return Arrays.asList(new String[] {
-                        WorldEnum.WORLD.toString(),
-                        WorldEnum.NETHER.toString(),
-                        WorldEnum.END.toString()
+                        "world",
+                        "nether",
+                        "the_end",
                 });
             }
             /* SPECIFY YOUR OWN WAYPOINT NAME.

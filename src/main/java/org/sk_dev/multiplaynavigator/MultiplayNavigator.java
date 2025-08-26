@@ -29,7 +29,7 @@ public final class MultiplayNavigator extends JavaPlugin {
         }
         try {
             this.getCommand("navigate").setExecutor(new NavigateCommand(this, activeNavigations));
-            this.getCommand("beacon").setExecutor(new BeaconCommand());
+            this.getCommand("beacon").setExecutor(new BeaconCommand(this));
         } catch (Exception e) {
             getLogger().log(Level.SEVERE, "Couldn't register some command(s).",e);
             Bukkit.getPluginManager().disablePlugin(this);
