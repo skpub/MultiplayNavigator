@@ -45,13 +45,17 @@ public class BeaconCommand implements CommandExecutor, TabCompleter {
                     return false;
                 }
                 World.Environment env;
-                try {
-                    env = World.Environment.valueOf(args[1]);
-                } catch (IllegalArgumentException e) {
-                    commandSender.sendMessage("ex: /beacon add world home 33 64 -38");
-                    commandSender.sendMessage("ex: /beacon add nether fortress -340 50 30");
-                    commandSender.sendMessage("ex: /beacon add the_end city 1300 60 30");
-                    return false;
+                switch (args[1]) {
+                    case "world" -> env = World.Environment.NORMAL;
+                    case "nether" -> env = World.Environment.NETHER;
+                    case "the_end" -> env = World.Environment.THE_END;
+                    case "custom" -> env = World.Environment.CUSTOM;
+                    default -> {
+                        commandSender.sendMessage("ex: /beacon add world home 33 64 -38");
+                        commandSender.sendMessage("ex: /beacon add nether fortress -340 50 30");
+                        commandSender.sendMessage("ex: /beacon add the_end city 1300 60 30");
+                        return false;
+                    }
                 }
                 String wayPointName = args[2];
                 int x = Integer.parseInt(args[3]);
